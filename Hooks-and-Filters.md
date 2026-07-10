@@ -12,7 +12,6 @@ This page is a complete reference generated from the plugin source, grouped by w
 
 - [Video Rendering & Blocks](#video-rendering--blocks)
 - [Playback & View Tracking](#playback--view-tracking)
-- [Frontend JS Player Events](#frontend-js-player-events)
 - [Private Videos & Access Control](#private-videos--access-control)
 - [Licensing](#licensing)
 - [REST API](#rest-api)
@@ -24,7 +23,10 @@ This page is a complete reference generated from the plugin source, grouped by w
 - [Pro: Email Collection Forms](#pro-email-collection-forms)
 - [Pro: Analytics](#pro-analytics)
 - [Pro: Third-Party API Requests (Bunny, Mailchimp, etc.)](#pro-third-party-api-requests-bunny-mailchimp-etc)
-- [More Examples](#more-examples)
+- [API Examples](#api-examples)
+  - [PHP: Progress Tracking](#php-progress-tracking)
+  - [PHP: Email Capture & Validation](#php-email-capture--validation)
+  - [JS: Frontend Player Events](#js-frontend-player-events)
 
 ---
 
@@ -164,40 +166,6 @@ add_filter( 'presto_player_load_js', function( $should_load ) {
 } );
 ```
 *Params:* `$should_load` (bool) · `inc/Services/Scripts.php:447`
-
----
-
-## Frontend JS Player Events
-
-These are plain JavaScript, not PHP — they fire in the browser as someone actually watches a video, using WordPress's own `wp.hooks` JS library (the same one block editor extensions use). Every player on the page fires them, so this is the easiest way to react to playback from your own JS without touching PHP at all.
-
-They all follow the pattern `presto.player{Event}`, and every callback receives the underlying [plyr.io](https://github.com/sampotts/plyr) player instance.
-
-```js
-wp.hooks.addAction( 'presto.playerReady', 'my-plugin-namespace', ( player ) => {
-  console.log( { player } );
-} );
-
-wp.hooks.addAction( 'presto.playerTimeUpdate', 'my-plugin-namespace', ( player ) => {
-  console.log( 'current time is ' + player.currentTime );
-} );
-```
-
-| Event | Fires when |
-|---|---|
-| `presto.playerReady` | The player instance is ready for API calls |
-| `presto.playerPlay` | Playback resumes after being paused |
-| `presto.playerPlaying` | Playback begins (first time, after pausing, or after replaying) |
-| `presto.playerPause` | Playback is paused |
-| `presto.playerTimeUpdate` | The current playback time changes |
-| `presto.playerEnded` | Playback finishes (doesn't fire if autoplay looping) |
-| `presto.playerSeeked` | A seek operation completes |
-| `presto.playerEnterFullScreen` | The player enters fullscreen |
-| `presto.playerExitFullScreen` | The player exits fullscreen |
-| `presto.playerHidden` | The tab is closed or loses focus while a video is playing |
-| `presto.playerVisible` | The tab regains focus after having been hidden |
-
-*Second argument to `addAction` is just your own namespace string (like a slug) — use something unique to your plugin/theme so WordPress doesn't collide it with someone else's.* · `packages/components/src/components/core/player/functions/actions.js`
 
 ---
 
@@ -517,17 +485,110 @@ Pro has its own copy of the same license-domain filter documented under [Licensi
 
 ---
 
-## More Examples
+## API Examples
 
-Prefer copy-pasting a working file over reading a reference table? We keep a small collection of ready-to-use snippets in [prestomade/api-examples](https://github.com/prestomade/api-examples):
+Prefer copy-pasting a working file over reading a reference table? We keep a small collection of ready-to-use snippets in [prestomade/api-examples](https://github.com/prestomade/api-examples) — the full source for everything below lives there, feel free to fork it and open a PR if you've built something worth sharing.
 
-| File | What it shows |
+### PHP: Progress Tracking
+
+Hooks `presto_player_progress` and loads the video's own data using the `Video` model.
+
+```php
+/**
+ * Do something on video progress
+ *
+ * @param integer $id      Video ID. Not a video hub id, but the id created
+ *                         when someone adds a video anywhere.
+ * @param integer $percent Progress percentage, 0-100, in multiples of 10.
+ */
+function custom_do_something_with_progress( $id, $percent ) {
+    // Get video data with the ID using our video model.
+    $video = new \PrestoPlayer\Models\Video( $id );
+
+    $title = $video->title;
+    $src   = $video->src;
+
+    // Maybe do your own custom action.
+    do_action( 'my_action', $video, $percent );
+}
+add_action( 'presto_player_progress', 'custom_do_something_with_progress', 10, 2 );
+```
+Source: [`php-actions.php`](https://github.com/prestomade/api-examples/blob/main/php-actions.php)
+
+### PHP: Email Capture & Validation
+
+Sends Pro email-collection submissions to your own list, plus adds custom validation to reject a submission before it saves.
+
+```php
+/**
+ * Do something with email capture.
+ *
+ * @param array                       $data       Submission data (already validated).
+ * @param \PrestoPlayer\Models\Preset $preset     Preset used for the email collection.
+ * @param \WP_Post                    $email_post The pp_email_submission post storing the capture.
+ * @param boolean                     $created    True if created, false if an existing entry was updated.
+ */
+function custom_do_something_with_email( $data, $preset, $email_post, $created ) {
+    $email = $data['email'];
+
+    if ( $created ) {
+        custom_add_person_to_list( $email ); // add a person to a list, or perform some other action
+    } else {
+        custom_update_person_on_list( $email );
+    }
+}
+add_action( 'presto_player/pro/forms/save', 'custom_do_something_with_email', 10, 4 );
+
+/**
+ * Validate email submission — reject with your own error message if needed.
+ * Read the raw input from the global $_POST array.
+ *
+ * @param array $errors
+ * @return array
+ */
+function custom_validate_email_input( $errors ) {
+    if ( ! my_custom_validation_function( $_POST['email'] ) ) {
+        $errors[] = __( 'This email address is blacklisted.', 'textdomain' );
+    }
+    return $errors;
+}
+add_filter( 'presto_player/pro/forms/validation', 'custom_validate_email_input' );
+```
+Source: [`email-capture.php`](https://github.com/prestomade/api-examples/blob/main/email-capture.php) — see also [Pro: Email Collection Forms](#pro-email-collection-forms) above for the full hook reference.
+
+### JS: Frontend Player Events
+
+Plain JavaScript, not PHP — these fire in the browser as someone actually watches a video, using WordPress's own `wp.hooks` JS library (the same one block editor extensions use). Every player on the page fires them, so this is the easiest way to react to playback without touching PHP at all.
+
+They all follow the pattern `presto.player{Event}`, and every callback receives the underlying [plyr.io](https://github.com/sampotts/plyr) player instance.
+
+```js
+wp.hooks.addAction( 'presto.playerReady', 'my-plugin-namespace', ( player ) => {
+  console.log( { player } );
+} );
+
+wp.hooks.addAction( 'presto.playerTimeUpdate', 'my-plugin-namespace', ( player ) => {
+  console.log( 'current time is ' + player.currentTime );
+} );
+```
+
+| Event | Fires when |
 |---|---|
-| [`php-actions.php`](https://github.com/prestomade/api-examples/blob/main/php-actions.php) | Hooking `presto_player_progress` and loading a video's data with the `Video` model |
-| [`email-capture.php`](https://github.com/prestomade/api-examples/blob/main/email-capture.php) | Sending Pro email-collection submissions to your own list, plus custom validation |
-| [`js-actions.js`](https://github.com/prestomade/api-examples/blob/main/js-actions.js) | Every [frontend JS player event](#frontend-js-player-events) above, in one file |
+| `presto.playerReady` | The player instance is ready for API calls |
+| `presto.playerPlay` | Playback resumes after being paused |
+| `presto.playerPlaying` | Playback begins (first time, after pausing, or after replaying) |
+| `presto.playerPause` | Playback is paused |
+| `presto.playerTimeUpdate` | The current playback time changes |
+| `presto.playerEnded` | Playback finishes (doesn't fire if autoplay looping) |
+| `presto.playerSeeked` | A seek operation completes |
+| `presto.playerEnterFullScreen` | The player enters fullscreen |
+| `presto.playerExitFullScreen` | The player exits fullscreen |
+| `presto.playerHidden` | The tab is closed or loses focus while a video is playing |
+| `presto.playerVisible` | The tab regains focus after having been hidden |
 
-Feel free to fork that repo and open a PR if you've built something worth sharing.
+*Second argument to `addAction` is just your own namespace string (like a slug) — use something unique to your plugin/theme so WordPress doesn't collide it with someone else's.*
+
+Source: [`js-actions.js`](https://github.com/prestomade/api-examples/blob/main/js-actions.js) · verified against `packages/components/src/components/core/player/functions/actions.js`
 
 ---
 
