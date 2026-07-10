@@ -24,6 +24,7 @@ Welcome to the developer-documentation wiki!
 ### Blocks & API
 - [Block-Development](Block-Development) — Registering blocks, filters, shortcodes
 - [REST-API-Reference](REST-API-Reference) — All endpoints (free + pro)
+- [Hooks-and-Filters](Hooks-and-Filters) — Every hook/filter in the free + pro plugins, with examples
 - [Settings-Reference](Settings-Reference) — All wp_options settings
 
 ### Backend

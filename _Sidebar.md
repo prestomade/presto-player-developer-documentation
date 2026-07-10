@@ -11,6 +11,7 @@
 ## Blocks & API
 - [Block Development](Block-Development)
 - [REST API Reference](REST-API-Reference)
+- [Hooks & Filters](Hooks-and-Filters)
 - [Settings Reference](Settings-Reference)
 
 ## Backend
