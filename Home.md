@@ -24,13 +24,15 @@ Welcome to the developer-documentation wiki!
 ### Blocks & API
 - [Block-Development](Block-Development) — Registering blocks, filters, shortcodes
 - [REST-API-Reference](REST-API-Reference) — All endpoints (free + pro)
-- [Hooks-and-Filters](Hooks-and-Filters) — Every hook/filter in the free + pro plugins, with examples
 - [Settings-Reference](Settings-Reference) — All wp_options settings
 
 ### Backend
 - [Services-and-Integrations](Services-and-Integrations) — All services, filters, actions
 - [Database-Schema](Database-Schema) — 6 custom tables with full column docs
 - [Pro-Plugin-Architecture](Pro-Plugin-Architecture) — Pro bootstrap, licensing, VIP builds
+
+### Hooks & Filters
+- [Hooks-and-Filters](Hooks-and-Filters) — Every hook/filter in the free + pro plugins, with examples
 
 ### API Examples
 - [Hooks-and-Filters#api-examples](Hooks-and-Filters#api-examples) — Ready-to-use snippets: progress tracking, email capture, frontend player events
