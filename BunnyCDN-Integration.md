@@ -104,7 +104,7 @@ For direct file storage (not Stream), `Services/Bunny/Storage/StorageAPI.php` ha
 - File deletion
 - Directory listing
 
-> **Security Note (v3.0.2):** An arbitrary file deletion vulnerability in Bunny CDN API endpoints was patched. Always validate file paths and user permissions before processing delete requests.
+> **Security Note:** A past release patched an arbitrary file deletion vulnerability in the Bunny CDN API endpoints. Always validate file paths and user permissions before processing delete requests.
 
 ---
 

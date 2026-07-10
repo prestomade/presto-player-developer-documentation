@@ -92,9 +92,9 @@ Both plugin folders must be siblings in the `plugins/` directory.
 2. Verify the library ID is correct
 3. Check server error logs: `WP_DEBUG_LOG` in `wp-config.php`
 
-### File deletion error after v3.0.2 patch
+### File deletion error after the security patch
 
-The arbitrary file deletion vulnerability was patched in v3.0.2. If you are seeing permission errors on delete endpoints, ensure you are running v3.0.2+ and that the user has `upload_files` capability.
+A past release patched an arbitrary file deletion vulnerability. If you are seeing permission errors on delete endpoints, ensure you are running an up-to-date version and that the user has `upload_files` capability.
 
 ---
 

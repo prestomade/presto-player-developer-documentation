@@ -4,9 +4,9 @@ Welcome to the developer-documentation wiki!
 
 # Presto Player Developer Documentation
 
-**Presto Player** (v4.0.8) is a WordPress video player plugin supporting YouTube, Vimeo, self-hosted HTML5, HLS, and Bunny.net. Built with a PHP DI container backend and React/StencilJS frontend, designed specifically for the Gutenberg block editor.
+**Presto Player** is a WordPress video player plugin supporting YouTube, Vimeo, self-hosted HTML5, HLS, and Bunny.net. Built with a PHP DI container backend and React/StencilJS frontend, designed specifically for the Gutenberg block editor.
 
-**Presto Player Pro** (v3.0.2) extends the free plugin with BunnyCDN, private video, email collection, analytics, and email marketing integrations.
+**Presto Player Pro** extends the free plugin with BunnyCDN, private video, email collection, analytics, and email marketing integrations.
 
 ---
 
@@ -53,5 +53,5 @@ Welcome to the developer-documentation wiki!
 | | Free | Pro |
 |-|------|-----|
 | PHP | 7.3+ | 7.3+ |
-| WordPress | 6.3+ | requires core >= 1.1.0 |
-| Current version | 4.0.8 | 3.0.2 |
+| WordPress | 6.3+ | 6.3+ |
+| Notes | — | Requires the free Presto Player plugin to be installed |
