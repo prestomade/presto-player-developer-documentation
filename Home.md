@@ -32,6 +32,9 @@ Welcome to the developer-documentation wiki!
 - [Database-Schema](Database-Schema) — 6 custom tables with full column docs
 - [Pro-Plugin-Architecture](Pro-Plugin-Architecture) — Pro bootstrap, licensing, VIP builds
 
+### API Examples
+- [Hooks-and-Filters#api-examples](Hooks-and-Filters#api-examples) — Ready-to-use snippets: progress tracking, email capture, frontend player events
+
 ### Pro Features
 - [BunnyCDN-Integration](BunnyCDN-Integration) — Stream, storage, URL signing
 - [Email-Providers](Email-Providers) — ActiveCampaign, Mailchimp, MailerLite, FluentCRM, Webhooks
